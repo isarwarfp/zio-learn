@@ -11,6 +11,12 @@ import zio.*
 import zio.http.Server
 import zio.json.{DeriveJsonCodec, JsonCodec}
 import com.example.reviewboard.http.services.CompanyService
+import com.example.reviewboard.http.services.CompanyServiceDummy
+import com.example.reviewboard.http.services.CompanyServiceLive
+import com.example.reviewboard.http.repositories.CompanyRespositoryLive
+import io.getquill.jdbczio.Quill
+import io.getquill.SnakeCase
+import com.example.reviewboard.http.repositories.Repository
 
 object Application extends ZIOAppDefault:
 
@@ -24,5 +30,7 @@ object Application extends ZIOAppDefault:
 
   override def run = serverProgram.provide(
     Server.default,
-    CompanyService.serviceLayer
+    CompanyRespositoryLive.layer,
+    CompanyServiceLive.layer,
+    Repository.repoLayer
   )

@@ -11,14 +11,18 @@ trait CompanyService:
   def getById(id: Long): Task[Option[Company]]
   def getBySlug(slug: String): Task[Option[Company]]
 
-object CompanyService:
-  val serviceLayer = ZLayer.succeed(new CompanyServiceDummy)
-
 class CompanyServiceLive private (repo: CompanyRepository) extends CompanyService:
   override def create(req: CreateCompanyRequest): Task[Company] = repo.create(req.toCompany(-1L))
   override def getAll: Task[List[Company]] = repo.get
   override def getById(id: Long): Task[Option[Company]] = repo.getById(id)
   override def getBySlug(slug: String): Task[Option[Company]] = repo.getBySlug(slug)
+
+object CompanyServiceLive:
+  val layer = ZLayer {
+    for {
+      repo <- ZIO.service[CompanyRepository]
+    } yield new CompanyServiceLive(repo)
+  }
 
 class CompanyServiceDummy extends CompanyService:
   var db: Map[Long, Company] = Map.empty
@@ -32,4 +36,7 @@ class CompanyServiceDummy extends CompanyService:
   override def getAll: Task[List[Company]] = ZIO.succeed(db.values.toList)
   override def getById(id: Long): Task[Option[Company]] = ZIO.attempt(db.get(id))
   override def getBySlug(slug: String): Task[Option[Company]] = ZIO.attempt(db.values.find(_.slug == slug))
+
+object CompanyServiceDummy:
+  val serviceLayer = ZLayer.succeed(new CompanyServiceDummy)
 

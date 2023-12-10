@@ -1,6 +1,7 @@
 .bloop
 .metals
 .vscode
+.bsp
 target
 modules/foundations/target
 modules/server/target

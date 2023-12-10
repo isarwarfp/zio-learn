@@ -49,7 +49,10 @@ class CompanyRepositoryLive(q: Quill.Postgres[SnakeCase]) extends CompanyReposit
   def get: Task[List[Company]] = run { query[Company] }
 
 object CompanyRespositoryLive:
-  val layer = ZLayer { ZIO.service[Quill.Postgres[SnakeCase.type]].map(quill => CompanyRepositoryLive(quill)) }
+  val layer = ZLayer { 
+    ZIO.service[Quill.Postgres[SnakeCase.type]]
+    .map(quill => CompanyRepositoryLive(quill)) 
+  }
 
 object CompanyRespositoryDemo extends ZIOAppDefault:
   val program = for {
