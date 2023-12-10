@@ -1,0 +1,15 @@
+.bloop
+.metals
+.vscode
+target
+modules/foundations/target
+modules/server/target
+
+project/target
+project/.bloop
+project/project
+
+.DS_Store
+project/.DS_Store
+modules/foundations/.DS_Store
+modules/server/.DS_Store
