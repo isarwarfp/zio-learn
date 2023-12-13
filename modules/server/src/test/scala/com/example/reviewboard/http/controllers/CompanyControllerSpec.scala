@@ -78,8 +78,8 @@ object CompanyControllerSpec extends ZIOSpecDefault:
         } yield response.body
         // inspect resposne
         program.assert { respBody =>
-          respBody.toOption.flatMap(_.fromJson[Company].toOption)
-          .contains(Some(company))
+          val c = respBody.toOption.flatMap(_.fromJson[Company].toOption)
+          c.contains(company)
         }
       }
     ).provide(ZLayer.succeed(serviceStub))
