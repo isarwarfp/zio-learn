@@ -10,7 +10,7 @@ import com.example.reviewboard.http.repositories.Repository.dataSourceLayer
 import java.sql.SQLException
 import com.example.reviewboard.http.gen.CompanyGen.*
 
-object CompanyRepositorySpec extends ZIOSpecDefault:
+object CompanyRepositorySpec extends ZIOSpecDefault with RepositorySpec:
   private val company = Company(1L, "my-company", "My Company", "www.go.com")
   override def spec: Spec[TestEnvironment & Scope, Any] = 
     suite("CompanyRepositorySpec")(
@@ -80,26 +80,3 @@ object CompanyRepositorySpec extends ZIOSpecDefault:
       Repository.quillLayer,
       Scope.default
     )
-
-  // Steps for Test Containers
-  // 1. Spawn a postgres container on docker just for the test
-  def mkContainer() = {
-    val container: PostgreSQLContainer[Nothing] = PostgreSQLContainer("postgres").withInitScript("sql/companies.sql")
-    container.start()
-    container
-  }
-  // 2. Create datasource to connect to postgress
-  def mkDataSource(container: PostgreSQLContainer[Nothing]) = {
-    val ds = new PGSimpleDataSource()
-    ds.setURL(container.getJdbcUrl())
-    ds.setUser(container.getUsername())
-    ds.setPassword(container.getPassword())
-    ds
-  }
-  // 3. Use datasoruce (ZLayer) to build Quill instance, will be also as ZLayer
-  val dsLayer = ZLayer {
-    for {
-      container  <- ZIO.acquireRelease(ZIO.attempt(mkContainer()))(c => ZIO.attempt(c.stop()).ignoreLogged)
-      datasource <- ZIO.attempt(mkDataSource(container))
-    } yield datasource
-  }
