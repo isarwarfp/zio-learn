@@ -6,7 +6,7 @@ import com.example.reviewboard.http.requests.CreateCompanyRequest
 import com.example.reviewboard.http.repositories.Repository
 import com.example.reviewboard.http.domain.data.Company
 import com.example.reviewboard.syntax.*
-import com.example.reviewboard.http.repositories.CompanyRespositoryLive
+import com.example.reviewboard.http.repositories.CompanyRepositoryLive
 import com.example.reviewboard.http.repositories.CompanyRepository
 
 object CompanyServiceSpec extends ZIOSpecDefault:

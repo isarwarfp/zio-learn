@@ -11,6 +11,7 @@ import java.sql.SQLException
 import com.example.reviewboard.http.gen.CompanyGen.*
 
 object CompanyRepositorySpec extends ZIOSpecDefault with RepositorySpec:
+  override val initScript = "sql/companies.sql"
   private val company = Company(1L, "my-company", "My Company", "www.go.com")
   override def spec: Spec[TestEnvironment & Scope, Any] = 
     suite("CompanyRepositorySpec")(
@@ -75,7 +76,7 @@ object CompanyRepositorySpec extends ZIOSpecDefault with RepositorySpec:
         }
       }
     ).provide(
-      CompanyRespositoryLive.layer,
+      CompanyRepositoryLive.layer,
       dsLayer,
       Repository.quillLayer,
       Scope.default

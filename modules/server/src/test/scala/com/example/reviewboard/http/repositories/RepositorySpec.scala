@@ -9,10 +9,11 @@ import com.example.reviewboard.http.repositories.Repository.dataSourceLayer
 import java.sql.SQLException
 
 trait RepositorySpec:
+  val initScript: String
   // Steps for Test Containers
   // 1. Spawn a postgres container on docker just for the test
   private def mkContainer() = {
-    val container: PostgreSQLContainer[Nothing] = PostgreSQLContainer("postgres").withInitScript("sql/companies.sql")
+    val container: PostgreSQLContainer[Nothing] = PostgreSQLContainer("postgres").withInitScript(initScript)
     container.start()
     container
   }

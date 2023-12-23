@@ -12,7 +12,7 @@ trait CompanyRepository:
   def getBySlug(slug: String): Task[Option[Company]]
   def get: Task[List[Company]]
 
-class CompanyRepositoryLive(q: Quill.Postgres[SnakeCase]) extends CompanyRepository:
+class CompanyRepositoryLive private (q: Quill.Postgres[SnakeCase]) extends CompanyRepository:
   import q.*
 
   inline given schema: SchemaMeta[Company] = schemaMeta[Company]("companies")
@@ -48,10 +48,9 @@ class CompanyRepositoryLive(q: Quill.Postgres[SnakeCase]) extends CompanyReposit
   }.map(_.headOption)
   def get: Task[List[Company]] = run { query[Company] }
 
-object CompanyRespositoryLive:
+object CompanyRepositoryLive:
   val layer = ZLayer { 
-    ZIO.service[Quill.Postgres[SnakeCase.type]]
-    .map(quill => CompanyRepositoryLive(quill)) 
+    ZIO.service[Quill.Postgres[SnakeCase.type]].map(q => CompanyRepositoryLive(q))
   }
 
 object CompanyRespositoryDemo extends ZIOAppDefault:
@@ -61,7 +60,7 @@ object CompanyRespositoryDemo extends ZIOAppDefault:
   } yield ()
 
   override def run: ZIO[Any & (ZIOAppArgs & Scope), Any, Any] = program.provide(
-    CompanyRespositoryLive.layer,
+    CompanyRepositoryLive.layer,
     Quill.Postgres.fromNamingStrategy(SnakeCase),
     Quill.DataSource.fromPrefix("mydbconf.db") 
   )
