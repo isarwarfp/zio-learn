@@ -10,13 +10,12 @@ import sttp.tapir.server.ziohttp.{ZioHttpInterpreter, ZioHttpServerOptions}
 import zio.*
 import zio.http.Server
 import zio.json.{DeriveJsonCodec, JsonCodec}
-import com.example.reviewboard.http.services.CompanyService
-import com.example.reviewboard.http.services.CompanyServiceDummy
-import com.example.reviewboard.http.services.CompanyServiceLive
+import com.example.reviewboard.http.services.*
 import com.example.reviewboard.http.repositories.CompanyRepositoryLive
 import io.getquill.jdbczio.Quill
 import io.getquill.SnakeCase
 import com.example.reviewboard.http.repositories.Repository
+import com.example.reviewboard.http.repositories.ReviewRepositoryLive
 
 object Application extends ZIOAppDefault:
 
@@ -32,5 +31,7 @@ object Application extends ZIOAppDefault:
     Server.default,
     CompanyRepositoryLive.layer,
     CompanyServiceLive.layer,
+    ReviewRepositoryLive.layer,
+    ReviewServiceLive.layer,
     Repository.repoLayer
   )

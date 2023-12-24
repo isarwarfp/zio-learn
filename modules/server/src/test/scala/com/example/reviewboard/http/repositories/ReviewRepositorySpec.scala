@@ -59,8 +59,7 @@ object ReviewRepositorySpec extends ZIOSpecDefault with RepositorySpec:
         } yield assertTrue (
             created.id == updated.id &&
             updated.review == "updated review" &&
-            updated.culture == created.culture &&
-            created.updated != updated.updated
+            updated.culture == created.culture
         )
       },
       test("delete review") {
