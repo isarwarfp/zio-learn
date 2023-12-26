@@ -9,10 +9,10 @@ import zio.*
 import com.example.reviewboard.http.services.ReviewService
 
 class ReviewController private (service: ReviewService) extends BaseController with ReviewEndpoints:
-  val create: ServerEndpoint[Any, Task] = createEndpoint.serverLogicSuccess { req => service.create(req, -1L) }
-  val getById: ServerEndpoint[Any, Task] = getByIdEndpoint.serverLogicSuccess { id =>  service.getById(id) }
-  val getByCompanyId: ServerEndpoint[Any, Task] = getByCompanyIdEndpoint.serverLogicSuccess { id =>  service.getByCompanyId(id) }
-  val getByUserId: ServerEndpoint[Any, Task] = getByUserIdEndpoint.serverLogicSuccess { id =>  service.getByUserId(id) }
+  val create: ServerEndpoint[Any, Task] = createEndpoint.serverLogic { req => service.create(req, -1L).either }
+  val getById: ServerEndpoint[Any, Task] = getByIdEndpoint.serverLogic { id =>  service.getById(id).either }
+  val getByCompanyId: ServerEndpoint[Any, Task] = getByCompanyIdEndpoint.serverLogic { id =>  service.getByCompanyId(id).either }
+  val getByUserId: ServerEndpoint[Any, Task] = getByUserIdEndpoint.serverLogic { id =>  service.getByUserId(id).either }
   override val routes: List[ServerEndpoint[Any, Task]] = List(create, getById, getByCompanyId, getByUserId)
 
 object ReviewController:

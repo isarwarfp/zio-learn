@@ -53,7 +53,7 @@ object CompanyControllerSpec extends ZIOSpecDefault:
         // inspect http response
         program.assert { respBody =>
           respBody.toOption.flatMap(_.fromJson[Company].toOption)
-          .contains(Company(1, "my-company", "My Company", "www.go.com"))
+          .contains(company)
         }
       },
       test("get all") {
