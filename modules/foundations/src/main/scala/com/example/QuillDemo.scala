@@ -14,7 +14,7 @@ object QuillDemo extends ZIOAppDefault:
   override def run: Task[Unit] = program.provide(
     PersonRepositoryLive.layer,
     Quill.Postgres.fromNamingStrategy(SnakeCase), // Quill Instance
-    Quill.DataSource.fromPrefix("mydbconf") // reads config section from application.conf and spin up a datasource
+    Quill.DataSource.fromPrefix("myconfig.db") // reads config section from application.conf and spin up a datasource
   )
 
 sealed trait PersonRepository:

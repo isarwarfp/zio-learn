@@ -4,19 +4,21 @@ import zio.*
 import com.auth0.jwt.*
 import com.auth0.jwt.JWTVerifier.BaseVerification
 import com.auth0.jwt.algorithms.Algorithm
+import com.example.reviewboard.config.JWTConfig
+import com.example.reviewboard.config.configs.mkLayer
 
 import java.time.Instant
 import com.example.reviewboard.http.domain.data.*
+import com.typesafe.config.ConfigFactory
+import zio.config.typesafe.TypesafeConfig
 
 trait JWTService:
   def createToken(user: User): Task[UserToken]
   def verifyToken(token: String): Task[UserId]
 
-class JWTServiceLive(clock: java.time.Clock) extends JWTService:
-  private val SECRET = "secret"
-  private val ALGO = Algorithm.HMAC512(SECRET)
+class JWTServiceLive(conf: JWTConfig, clock: java.time.Clock) extends JWTService:
+  private val ALGO = Algorithm.HMAC512(conf.secret)
   private val ISSUER = "imran"
-  private val TTL = 30 * 24 * 3600
   private val CLAIM_USER_NAME = "username"
   private val JWT_VERIFIER = JWT
     .require(ALGO)
@@ -26,7 +28,7 @@ class JWTServiceLive(clock: java.time.Clock) extends JWTService:
 
   def createToken(user: User): Task[UserToken] = for {
     now <- ZIO.attempt(clock.instant())
-    expiration <- ZIO.succeed(now.plusSeconds(TTL))
+    expiration <- ZIO.succeed(now.plusSeconds(conf.ttl))
     token <- ZIO.attempt(
       JWT
         .create()
@@ -47,10 +49,15 @@ class JWTServiceLive(clock: java.time.Clock) extends JWTService:
 
 object JWTServiceLive:
   val layer = ZLayer {
-    Clock.javaClock.map(new JWTServiceLive(_))
+    for {
+      conf <- ZIO.service[JWTConfig]
+      c    <- Clock.javaClock
+    } yield new JWTServiceLive(conf, c)
   }
+  val configuredLayer = mkLayer[JWTConfig]("myconfig.jwt") >>> layer
 
 object JWTServiceDemo extends ZIOAppDefault:
+
   val program = for {
     service <- ZIO.service[JWTService]
     token <- service.createToken(User(1, "imran", "not-important"))
@@ -58,7 +65,10 @@ object JWTServiceDemo extends ZIOAppDefault:
     userId <- service.verifyToken(token.token)
     _ <- Console.printLine(userId)
   } yield ()
-  override def run = program.provide(JWTServiceLive.layer)
+  override def run = program.provide(
+    JWTServiceLive.layer,
+    mkLayer[JWTConfig]("myconfig.jwt")
+  )
 
 
 

@@ -5,6 +5,6 @@ import io.getquill.SnakeCase
 
 object Repository:
   def quillLayer = Quill.Postgres.fromNamingStrategy(SnakeCase)
-  def dataSourceLayer = Quill.DataSource.fromPrefix("mydbconf.db")
+  def dataSourceLayer = Quill.DataSource.fromPrefix("myconfig.db")
 
   val repoLayer = dataSourceLayer >>> quillLayer
