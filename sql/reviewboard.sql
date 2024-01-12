@@ -3,9 +3,9 @@ CREATE database reviewboard;
 
 CREATE TABLE IF NOT EXISTS companies (
     id   BIGSERIAL PRIMARY KEY,
-    slug TEXT UNIQUE NOT NULL,
-    name TEXT UNIQUE NOT NULL,
-    url  TEXT UNIQUE NOT NULL,
+    slug TEXT NOT NULL,
+    name TEXT NOT NULL,
+    url  TEXT NOT NULL,
     location TEXT,
     country TEXT,
     industry TEXT,

@@ -12,15 +12,34 @@ import Hasher.*
 trait UserService:
   def registerUser(email: String, pwd: String): Task[User]
   def verifyPassword(email: String, password: String): Task[Boolean]
+  def updatePassword(email: String, oldPassword: String, newPassword: String): Task[User]
+  def deleteUser(email: String, password: String): Task[User]
   def generateToken(email: String, password: String): Task[Option[UserToken]]
 
 class UserServiceLive private (jwtService: JWTService, repo: UserRepository) extends UserService:
   override def registerUser(email: String, pwd: String): Task[User] =
-    repo.create(User(id = -1L, email = email, hashedPwd = generateHash(pwd)))
+    repo.create(User(id = -1L, email = email, hashedPwd = genHash(pwd)))
   override def verifyPassword(email: String, password: String): Task[Boolean] = for {
-    user <- repo.getByEmail(email).someOrFail(new Exception("User not found"))
-    result <- ZIO.attempt(validateHashedPwd(password, user.hashedPwd))
+    user   <- repo.getByEmail(email)
+    result <- user match {
+      case Some(user) => ZIO.attempt(validateHashedPwd(password, user.hashedPwd)).orElse(ZIO.succeed(false))
+      case None       => ZIO.succeed(false)
+    }
   } yield result
+
+  override def updatePassword(email: String, oldPassword: String, newPassword: String): Task[User] = for {
+    user     <- repo.getByEmail(email).someOrFail(new RuntimeException("User not found"))
+    verified <- ZIO.attempt(validateHashedPwd(oldPassword, user.hashedPwd))
+    updated  <- repo.update(user.id, user => user.copy(hashedPwd = genHash(newPassword))).when(verified)
+      .someOrFail(new RuntimeException("User not found"))
+  } yield updated
+
+  override def deleteUser(email: String, password: String): Task[User] = for {
+    user     <- repo.getByEmail(email).someOrFail(new RuntimeException("User not found"))
+    verified <- ZIO.attempt(validateHashedPwd(password, user.hashedPwd))
+    deleted  <- repo.delete(user.id).when(verified).someOrFail(new RuntimeException("Could not delete user."))
+  } yield deleted
+
   override def generateToken(email: String, password: String): Task[Option[UserToken]] = for {
     user     <- repo.getByEmail(email).someOrFail(new Exception("User not found"))
     verified <- ZIO.attempt(validateHashedPwd(password, user.hashedPwd))
@@ -28,10 +47,12 @@ class UserServiceLive private (jwtService: JWTService, repo: UserRepository) ext
   } yield token
 
 object UserServiceLive:
-  val layer = for {
-    jwtService <- ZIO.service[JWTService]
-    repo       <- ZIO.service[UserRepository]
-  } yield new UserServiceLive(jwtService, repo)
+  val layer = ZLayer {
+    for {
+      jwtService <- ZIO.service[JWTService]
+      repo       <- ZIO.service[UserRepository]
+    } yield new UserServiceLive(jwtService, repo)
+  }
 
 object Hasher:
   private val PBKDF2_ITERATIONS = 1000
@@ -52,7 +73,7 @@ object Hasher:
     diff == 0
   }
 
-  def generateHash(message: String): String = {
+  def genHash(message: String): String = {
     val rng = new SecureRandom()
     val salt = Array.ofDim[Byte](SALT_BYTES)
     rng.nextBytes(salt)
@@ -68,5 +89,6 @@ object Hasher:
     compareBytes(testHash, validHash)
 
 object HasherDemo extends App:
-    val hashed = Hasher.generateHash("123456")
+    val hashed = Hasher.genHash("123456")
+    println(hashed)
     println(validateHashedPwd("123456", hashed))
