@@ -1,7 +1,14 @@
 package com.example.reviewboard
 
+import com.example.reviewboard.config.JWTConfig
+import com.example.reviewboard.config.configs.mkLayer
 import com.example.reviewboard.http.HttpApi
 import com.example.reviewboard.http.controllers.HealthController
+import com.example.reviewboard.http.repositories.{CompanyRepositoryLive, Repository, ReviewRepositoryLive, UserRepositoryLive}
+import com.example.reviewboard.http.services.*
+import com.stripe.param.ChargeUpdateParams.FraudDetails.UserReport
+import io.getquill.SnakeCase
+import io.getquill.jdbczio.Quill
 import sttp.tapir.*
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.zio.jsonBody
@@ -10,12 +17,6 @@ import sttp.tapir.server.ziohttp.{ZioHttpInterpreter, ZioHttpServerOptions}
 import zio.*
 import zio.http.Server
 import zio.json.{DeriveJsonCodec, JsonCodec}
-import com.example.reviewboard.http.services.*
-import com.example.reviewboard.http.repositories.CompanyRepositoryLive
-import io.getquill.jdbczio.Quill
-import io.getquill.SnakeCase
-import com.example.reviewboard.http.repositories.Repository
-import com.example.reviewboard.http.repositories.ReviewRepositoryLive
 
 object Application extends ZIOAppDefault:
 
@@ -33,5 +34,8 @@ object Application extends ZIOAppDefault:
     CompanyServiceLive.layer,
     ReviewRepositoryLive.layer,
     ReviewServiceLive.layer,
-    Repository.repoLayer
+    Repository.repoLayer,
+    UserRepositoryLive.layer,
+    JWTServiceLive.configuredLayer,
+    UserServiceLive.layer
   )

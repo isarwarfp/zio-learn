@@ -10,7 +10,8 @@ object HttpApi:
   private def mkController = for {
     health    <- HealthController.mkZIO
     companies <- CompanyController.mkZIO
-    reviews   <- ReviewController.mkZIO 
-  } yield List(health, companies, reviews)
+    reviews   <- ReviewController.mkZIO
+    users     <- UserController.mkZIO
+  } yield List(health, companies, reviews, users)
 
   def routes = mkController.map(gatherRoutes)

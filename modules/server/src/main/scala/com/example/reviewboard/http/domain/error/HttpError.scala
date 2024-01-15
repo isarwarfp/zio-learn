@@ -1,6 +1,7 @@
 package com.example.reviewboard.http.domain.error
 
 import sttp.model.StatusCode
+import com.example.reviewboard.http.domain.error.*
 
 final case class HttpError(
   statusCode: StatusCode,
@@ -15,6 +16,7 @@ object HttpError:
     // Commented because of endpoint would return Task[Either[Throwable, String]]
   // def encode(error: HttpError) =
   //   (error.statusCode, error.message)
-  def encode(error: Throwable) =
-    (StatusCode.InternalServerError, error.getMessage)
+  def encode(error: Throwable) = error match
+    case UnauthorizedException => (StatusCode.Unauthorized, error.getMessage)
+    case _                     => (StatusCode.InternalServerError, error.getMessage)
 
