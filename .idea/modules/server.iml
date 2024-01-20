@@ -9,11 +9,11 @@
       <sourceFolder url="file://$MODULE_DIR$/../../modules/server/src/main/scala" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../modules/server/src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../modules/server/src/test/scala" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/../../modules/server/target/streams" />
-      <excludeFolder url="file://$MODULE_DIR$/../../modules/server/target/test-reports" />
+      <excludeFolder url="file://$MODULE_DIR$/../../modules/server/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="sbt: scala-sdk-3.3.1" level="project" />
     <orderEntry type="library" name="sbt: ch.qos.logback:logback-classic:1.4.4:jar" level="project" />
     <orderEntry type="library" name="sbt: ch.qos.logback:logback-core:1.4.4:jar" level="project" />
     <orderEntry type="library" name="sbt: com.auth0:java-jwt:4.2.1:jar" level="project" />

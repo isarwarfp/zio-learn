@@ -5,14 +5,12 @@
     <output-test url="file://$MODULE_DIR$/../../target/scala-3.3.1/test-classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../..">
-      <excludeFolder url="file://$MODULE_DIR$/../../target/global-logging" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/streams" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/task-temp-directory" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/test-reports-zio" />
+      <excludeFolder url="file://$MODULE_DIR$/../../target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="foundations" exported="" />
+    <orderEntry type="library" name="sbt: scala-sdk-3.3.1" level="project" />
+    <orderEntry type="module" module-name="foundations" />
     <orderEntry type="library" name="sbt: ch.qos.logback:logback-classic:1.4.4:jar" level="project" />
     <orderEntry type="library" name="sbt: ch.qos.logback:logback-core:1.4.4:jar" level="project" />
     <orderEntry type="library" name="sbt: com.auth0:java-jwt:4.2.1:jar" level="project" />
@@ -174,6 +172,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="server" exported="" />
+    <orderEntry type="module" module-name="server" />
   </component>
 </module>
